@@ -4,7 +4,7 @@ import math
 
 
 class Compass:
-    """ Class to control the QMC5883L digital compass."""
+    """ Class to control the QMC5883L magnetometer."""
 
     ADDRESS = 0x0d  # Address of compass on bus.
     X_REGS = (0, 1)  # Regs for x low and x high bytes.
@@ -19,7 +19,7 @@ class Compass:
 
     # common set-up config.
     CONTINUOUS_MODE = 0b00011101  # Continuous mode at 200Hz, 8G and OSR = 512
-    scale = 4.35  # based on guass being 8G.
+    SCALE = 4.35  # based on guass being 8G.
 
     def __init__(self, x_offset=0, y_offset=0, declination=0, mode=CONTINUOUS_MODE):
         self.bus = smbus.SMBus(self.SMBUS)
@@ -67,14 +67,14 @@ class Compass:
         """Returns the value of x, y and z axes"""
 
         # Last bit of DATA_STATE_REG indicates data available.
-        # & 1 returns 1 if lsb it 1.
+        # & 1 returns 1 if lsb is 1.
         data_ready = self._read_byte(self.DATA_STATE_REG) & 1
         if data_ready:
-            self.x_axis = (self._read_axis(self.X_REGS) * self.scale) - \
+            self.x_axis = (self._read_axis(self.X_REGS) * self.SCALE) - \
                 self.x_calibration_offset
-            self.y_axis = (self._read_axis(self.Y_REGS) * self.scale) - \
+            self.y_axis = (self._read_axis(self.Y_REGS) * self.SCALE) - \
                 self.y_calibration_offset
-            self.z_axis = self._read_axis(self.Z_REGS) * self.scale
+            self.z_axis = self._read_axis(self.Z_REGS) * self.SCALE
             return (self.x_axis, self.y_axis, self.z_axis)
         else:
             return(None, None, None)

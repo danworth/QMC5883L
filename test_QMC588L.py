@@ -35,7 +35,7 @@ class TestCompass(unittest.TestCase):
         self.assertEqual(self.compass._read_axis(self.compass.X_REGS), -1)
 
     def test_get_axes_data_ready(self):
-        self.compass.scale = 1
+        self.compass.SCALE = 1
         self.compass.bus.read_byte_data.side_effect = [0b00000001,  # Data ready.
                                                        0b00000001, 0b00000000,  # X-axis
                                                        0b00000010, 0b00000000,  # Y-axis
@@ -43,7 +43,7 @@ class TestCompass(unittest.TestCase):
         self.assertEqual(self.compass.get_axes(), (1, 2, 3))
 
     def test_get_axes_data_not_ready(self):
-        self.compass.scale = 1
+        self.compass.SCALE = 1
         # Data not ready.
         self.compass.bus.read_byte_data.side_effect = [0b00000000]
         self.assertEqual(self.compass.get_axes(), (None, None, None))
@@ -59,7 +59,7 @@ class TestCompass(unittest.TestCase):
         self.assertEqual(self.compass.get_heading(), (63, 26))
 
     def test_calibrate_xyraw(self):
-        self.compass.scale = 1
+        self.compass.SCALE = 1
         self.compass.CALIBRATION_STEPS = 1
         self.compass.bus.read_byte_data.side_effect = [0b00000001,  # Data ready.
                                                        # X-axis.
